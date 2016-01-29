@@ -13,7 +13,7 @@ import React, {
   View
 } from 'react-native';
 
-var REQUEST_URL = 'https://www.reddit.com/r/soccer/top.json?limit=50';
+var REQUEST_URL = 'https://www.reddit.com/r/gifs/top.json?limit=50';
 
 class Shogun extends Component {
 
@@ -33,8 +33,19 @@ class Shogun extends Component {
 
   fetchData() {
     fetch(REQUEST_URL)
-      .then((response) => response.json())
+      .then((response) => 
+        response.json()
+      )
       .then((responseData) => {
+        console.log(responseData.data.children[0].data.title);
+        console.log(responseData.data.children[0].data.thumbnail);
+        var tableFields = responseData.data.children[0].data;
+        var output = '';
+        for (var property in tableFields) {
+          output += property + ': ' + tableFields[property]+'; ';
+        }
+        console.log(output);
+
         this.setState({
           dataSource: this.state.dataSource.cloneWithRows(responseData.data.children),
           loaded: true,
@@ -63,17 +74,22 @@ class Shogun extends Component {
     );
   }
 
-  renderLink(link) {
-    console.log(link.data.thumbnail);
-    console.log(link.data.title);
+  renderLink(link, sectionID, rowID, highlightRow) {
+    console.log(rowID, ":",link.data.title);
+    //console.log(rowID, ":", link.data.thumbnail);
+    console.log(rowID, ":", link.data.url);
     return (
       <View style={styles.container}>
         <Image
-          source={{uri: link.thumbnail}}
+          source={{uri: link.data.thumbnail}}
           style={styles.thumbnail}
         />
         <View style={styles.rightContainer}>
           <Text style={styles.title}>{link.data.title}</Text>
+          <Image
+            source={{uri: link.data.url}}
+            style={styles.gif}
+        />
         </View>
       </View>
     );
@@ -90,6 +106,8 @@ var styles = StyleSheet.create({
   },
   rightContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 20,
@@ -98,6 +116,10 @@ var styles = StyleSheet.create({
   },
   year: {
     textAlign: 'center',
+  },
+  gif: {
+    width: 100,
+    height: 100,
   },
   thumbnail: {
     width: 53,
