@@ -13,11 +13,7 @@ import React, {
   View
 } from 'react-native';
 
-var MOCKED_MOVIES_DATA = [
-  {title: 'Title', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
-];
-
-var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
+var REQUEST_URL = 'https://www.reddit.com/r/soccer/top.json?limit=50';
 
 class Shogun extends Component {
 
@@ -40,7 +36,7 @@ class Shogun extends Component {
       .then((response) => response.json())
       .then((responseData) => {
         this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
+          dataSource: this.state.dataSource.cloneWithRows(responseData.data.children),
           loaded: true,
         });
       })
@@ -53,7 +49,7 @@ class Shogun extends Component {
     }
 
     return (
-      <ListView dataSource={this.state.dataSource} renderRow={this.renderMovie} style={styles.listView} /> 
+      <ListView dataSource={this.state.dataSource} renderRow={this.renderLink} style={styles.listView} /> 
     );
   }
 
@@ -61,22 +57,23 @@ class Shogun extends Component {
     return (
       <View style={styles.container}>
         <Text>
-          Loading movies...
+          Loading links...
         </Text>
       </View>
     );
   }
 
-  renderMovie(movie) {
+  renderLink(link) {
+    console.log(link.data.thumbnail);
+    console.log(link.data.title);
     return (
       <View style={styles.container}>
         <Image
-          source={{uri: movie.posters.thumbnail}}
+          source={{uri: link.thumbnail}}
           style={styles.thumbnail}
         />
         <View style={styles.rightContainer}>
-          <Text style={styles.title}>{movie.title}</Text>
-          <Text style={styles.year}>{movie.year}</Text>
+          <Text style={styles.title}>{link.data.title}</Text>
         </View>
       </View>
     );
